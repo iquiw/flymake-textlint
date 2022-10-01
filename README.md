@@ -35,3 +35,7 @@ $ git clone https://github.com/iquiw/flymake-textlint.git
 (autoload 'flymake-textlint-setup "flymake-textlint")
 (add-hook 'markdown-mode-hook #'flymake-textlint-setup)
 ```
+
+## License
+
+Licensed under the GPL 3+.
