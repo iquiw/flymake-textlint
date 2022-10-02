@@ -55,6 +55,22 @@
     ,@(let ((name (buffer-file-name)))
         (and name (list "--stdin-filename" name)))))
 
+(defun flymake-textlint--parse-buffer (source)
+  "Parse \"textlint\" output buffer.
+SOURCE is used for `flymake-make-diagnostic', not a buffer to be parsed."
+  (goto-char (point-min))
+  (let ((json (json-parse-buffer)))
+    (mapcar
+     (lambda (message)
+       (let ((range (gethash "range" message)))
+         (flymake-make-diagnostic
+          source
+          (+ (elt range 0) 1)
+          (+ (elt range 1) 1)
+          (flymake-textlint--severity (gethash "severity" message))
+          (gethash "message" message))))
+     (gethash "messages" (elt json 0)))))
+
 (defun flymake-textlint--severity (level)
   "Convert numerical severity LEVEL to Flymake severity type."
   (cond
@@ -110,19 +126,7 @@ JSON output of \"textlint\" is processed and passed to REPORT-FN."
                 ;;
                 (if (with-current-buffer source (eq proc flymake-textlint--proc))
                     (with-current-buffer (process-buffer proc)
-                      (goto-char (point-min))
-                      (let ((json (json-parse-buffer)))
-                        (funcall report-fn
-                                 (mapcar
-                                  (lambda (message)
-                                    (let ((range (gethash "range" message)))
-                                      (flymake-make-diagnostic
-                                       source
-                                       (+ (elt range 0) 1)
-                                       (+ (elt range 1) 1)
-                                       (flymake-textlint--severity (gethash "severity" message))
-                                       (gethash "message" message))))
-                                  (gethash "messages" (elt json 0))))))
+                      (funcall report-fn (flymake-textlint--parse-buffer source)))
                   (flymake-log :warning "Canceling obsolete check %s"
                                proc))
               ;; Cleanup the temporary buffer used to hold the
