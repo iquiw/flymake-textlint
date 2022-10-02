@@ -41,7 +41,7 @@
   "Program to execute \"textlint\"."
   :type 'string)
 
-(defcustom flymake-textlint-args '("--format" "json" "--stdin")
+(defcustom flymake-textlint-args '()
   "Arguments of \"textlint\" program."
   :type '(string))
 
@@ -50,7 +50,8 @@
 (defun flymake-textlint--command-line ()
   "Generate command list of \"textlint\" to be executed."
   `(,flymake-textlint-program
-    ,@flymake-textlint-args))
+    ,@flymake-textlint-args
+    "--format" "json" "--stdin"))
 
 (defun flymake-textlint--severity (level)
   "Convert numerical severity LEVEL to Flymake severity type."
