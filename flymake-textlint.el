@@ -47,6 +47,11 @@
 
 (defvar-local flymake-textlint--proc nil)
 
+(defun flymake-textlint--command-line ()
+  "Generate command list of \"textlint\" to be executed."
+  `(,flymake-textlint-program
+    ,@flymake-textlint-args))
+
 (defun flymake-textlint--severity (level)
   "Convert numerical severity LEVEL to Flymake severity type."
   (cond
@@ -88,7 +93,7 @@ JSON output of \"textlint\" is processed and passed to REPORT-FN."
         ;; Make output go to a temporary buffer.
         ;;
         :buffer (generate-new-buffer " *flymake-textlint*")
-        :command (cons flymake-textlint-program flymake-textlint-args)
+        :command (flymake-textlint--command-line)
         :sentinel
         (lambda (proc _event)
           ;; Check that the process has indeed exited, as it might
