@@ -51,7 +51,9 @@
   "Generate command list of \"textlint\" to be executed."
   `(,flymake-textlint-program
     ,@flymake-textlint-args
-    "--format" "json" "--stdin"))
+    "--format" "json" "--stdin"
+    ,@(let ((name (buffer-file-name)))
+        (and name (list "--stdin-filename" name)))))
 
 (defun flymake-textlint--severity (level)
   "Convert numerical severity LEVEL to Flymake severity type."
