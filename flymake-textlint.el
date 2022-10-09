@@ -3,7 +3,7 @@
 ;; Copyright (C) 2022 Iku Iwasa
 
 ;; Author: Iku Iwasa <iku.iwasa@gmail.com>
-;; Version: 0.0.1
+;; Version: 0.1.0
 ;; Keywords: languages tools
 ;; Package-Requires: ((emacs "27.1"))
 ;; Homepage: https://github.com/iquiw/flymake-textlint
