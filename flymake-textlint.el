@@ -5,7 +5,7 @@
 ;; Author: Iku Iwasa <iku.iwasa@gmail.com>
 ;; Version: 0.0.1
 ;; Keywords: languages tools
-;; Package-Requires: ((emacs "27.1") (flymake "1.2.2"))
+;; Package-Requires: ((emacs "27.1"))
 ;; Homepage: https://github.com/iquiw/flymake-textlint
 
 
