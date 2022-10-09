@@ -3,9 +3,9 @@
 ;; Copyright (C) 2022 Iku Iwasa
 
 ;; Author: Iku Iwasa <iku.iwasa@gmail.com>
-;; Version: 0.0.1
+;; Version: 0.1.0
 ;; Keywords: languages tools
-;; Package-Requires: ((emacs "27.1") (flymake "1.2.2"))
+;; Package-Requires: ((emacs "27.1"))
 ;; Homepage: https://github.com/iquiw/flymake-textlint
 
 
@@ -72,7 +72,9 @@ SOURCE is used for `flymake-make-diagnostic', not a buffer to be parsed."
             (+ (elt range 0) 1)
             (+ (elt range 1) 1)
             (flymake-textlint--severity (gethash "severity" message))
-            (gethash "message" message))))
+            (format "%s: %s"
+                    (gethash "ruleId" message)
+                    (gethash "message" message)))))
        (gethash "messages" (elt json 0))))))
 
 (defun flymake-textlint--severity (level)
