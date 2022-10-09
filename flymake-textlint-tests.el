@@ -51,7 +51,7 @@ https://github.com/textlint/textlint/blob/master/docs/configuring.md
         (should (equal (flymake--diag-beg diag) 60))
         (should (equal (flymake--diag-end diag) 61))
         (should (equal (flymake--diag-type diag) :error))
-        (should (equal (flymake--diag-text diag) "又は => または"))))))
+        (should (equal (flymake--diag-text diag) "jtf-style/2.2.1.ひらがなと漢字の使い分け: 又は => または"))))))
 
 (ert-deftest flymake-textlint--parse-buffer-2-error ()
   "Test whether 2 errors output can be parsed."
@@ -65,11 +65,11 @@ https://github.com/textlint/textlint/blob/master/docs/configuring.md
         (should (equal (flymake--diag-beg diag1) 67))
         (should (equal (flymake--diag-end diag1) 68))
         (should (equal (flymake--diag-type diag1) :error))
-        (should (equal (flymake--diag-text diag1) "本文を敬体(ですます調)に統一して下さい。\n本文の文体は、敬体(ですます調)あるいは常体(である調)のどちらかで統一します。\n\"である。\"が常体(である調)です。"))
+        (should (equal (flymake--diag-text diag1) "jtf-style/1.1.1.本文: 本文を敬体(ですます調)に統一して下さい。\n本文の文体は、敬体(ですます調)あるいは常体(である調)のどちらかで統一します。\n\"である。\"が常体(である調)です。"))
         (should (equal (flymake--diag-beg diag2) 74))
         (should (equal (flymake--diag-end diag2) 75))
         (should (equal (flymake--diag-type diag2) :error))
-        (should (equal (flymake--diag-text diag2) "又は => または"))
+        (should (equal (flymake--diag-text diag2) "jtf-style/2.2.1.ひらがなと漢字の使い分け: 又は => または"))
         ))))
 
 (provide 'flymake-textlint-tests)

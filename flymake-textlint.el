@@ -72,7 +72,9 @@ SOURCE is used for `flymake-make-diagnostic', not a buffer to be parsed."
             (+ (elt range 0) 1)
             (+ (elt range 1) 1)
             (flymake-textlint--severity (gethash "severity" message))
-            (gethash "message" message))))
+            (format "%s: %s"
+                    (gethash "ruleId" message)
+                    (gethash "message" message)))))
        (gethash "messages" (elt json 0))))))
 
 (defun flymake-textlint--severity (level)
