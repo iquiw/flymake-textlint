@@ -90,5 +90,12 @@ UNC パスはサポートされません。Windows ディレクトリを既定�
         (should (equal (flymake--diag-type diag) :error))
         (should (equal (flymake--diag-text diag) "jtf-style/2.2.1.ひらがなと漢字の使い分け: 又は => または"))))))
 
+(ert-deftest flymake-textlint--should-error-if-program-not-found ()
+  "Test whether not to execute textlint process in empty buffer."
+  (with-temp-buffer
+    (let ((proc (lambda (_) nil))
+          (flymake-textlint-program "never-existent-program"))
+      (should-error (flymake-textlint proc)))))
+
 (provide 'flymake-textlint-tests)
 ;;; flymake-textlint-tests.el ends here

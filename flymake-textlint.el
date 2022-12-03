@@ -100,8 +100,8 @@ JSON output of \"textlint\" is processed and passed to REPORT-FN."
   ;; Not having textlint command is a serious problem which should cause
   ;; the backend to disable itself, so an error is signaled.
   ;;
-  (unless (executable-find "textlint")
-    (error "Cannot find a suitable textlint"))
+  (unless (executable-find flymake-textlint-program)
+    (error "Cannot find a suitable textlint program: %s" flymake-textlint-program))
   ;; If a live process launched in an earlier check was found, that
   ;; process is killed.  When that process's sentinel eventually runs,
   ;; it will notice its obsoletion, since it have since reset
