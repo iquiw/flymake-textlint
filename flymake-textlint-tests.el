@@ -7,7 +7,8 @@
 
 (ert-deftest flymake-textlint--command-line-default ()
   "Test whether default command line is correct."
-  (let ((buffer-file-name nil))
+  (let ((flymake-textlint-args '())
+        (buffer-file-name nil))
     (should (equal (flymake-textlint--command-line)
                    '("textlint" "--format" "json" "--stdin")))))
 
@@ -20,7 +21,8 @@
 
 (ert-deftest flymake-textlint--command-line-with-name ()
   "Test whether default command line is correct."
-  (let ((buffer-file-name "test.md"))
+  (let ((flymake-textlint-args '())
+        (buffer-file-name "test.md"))
     (should (equal (flymake-textlint--command-line)
                    '("textlint" "--format" "json" "--stdin" "--stdin-filename" "test.md")))))
 
@@ -71,6 +73,29 @@ https://github.com/textlint/textlint/blob/master/docs/configuring.md
         (should (equal (flymake--diag-type diag2) :error))
         (should (equal (flymake--diag-text diag2) "jtf-style/2.2.1.ひらがなと漢字の使い分け: 又は => または"))
         ))))
+
+(ert-deftest flymake-textlint--parse-buffer-with-garbage ()
+  "Test whether output with garbage from cmdproxy can be parsed."
+  (with-temp-buffer
+    (insert "'\\\\PC\\Folder'
+上記の現在のディレクトリで CMD.EXE を開始しました。
+UNC パスはサポートされません。Windows ディレクトリを既定で使用します。
+[{\"messages\":[{\"type\":\"lint\",\"ruleId\":\"jtf-style/2.2.1.ひらがなと漢字の使い分け\",\"message\":\"又は => または\",\"index\":59,\"line\":3,\"column\":2,\"range\":[59,60],\"loc\":{\"start\":{\"line\":3,\"column\":2},\"end\":{\"line\":3,\"column\":3}},\"severity\":2,\"fix\":{\"range\":[59,61],\"text\":\"または\"}}],\"filePath\":\"/tmp/test.md\"}]
+")
+    (let ((diags (flymake-textlint--parse-buffer "dummy")))
+      (should (equal (length diags) 1))
+      (let ((diag (elt diags 0)))
+        (should (equal (flymake--diag-beg diag) 60))
+        (should (equal (flymake--diag-end diag) 61))
+        (should (equal (flymake--diag-type diag) :error))
+        (should (equal (flymake--diag-text diag) "jtf-style/2.2.1.ひらがなと漢字の使い分け: 又は => または"))))))
+
+(ert-deftest flymake-textlint--should-error-if-program-not-found ()
+  "Test whether not to execute textlint process in empty buffer."
+  (with-temp-buffer
+    (let ((proc (lambda (_) nil))
+          (flymake-textlint-program "never-existent-program"))
+      (should-error (flymake-textlint proc)))))
 
 (provide 'flymake-textlint-tests)
 ;;; flymake-textlint-tests.el ends here

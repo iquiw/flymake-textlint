@@ -59,23 +59,31 @@
   "Parse \"textlint\" output buffer.
 SOURCE is used for `flymake-make-diagnostic', not a buffer to be parsed."
   (goto-char (point-min))
-  (if (re-search-forward "^== No rules found" 100 t)
-      (progn
-        (flymake-log :error "No textlint rule found")
-        nil)
+  (cond
+   ;; no rule found
+   ((re-search-forward "^== No rules found" 100 t)
+    (flymake-log :error "No textlint rule found")
+    nil)
+   ;; found JSON array
+   ((re-search-forward "^\\[" nil t)
+    (goto-char (match-beginning 0))
     (let ((json (json-parse-buffer)))
       (mapcar
        (lambda (message)
          (let ((range (gethash "range" message)))
            (flymake-make-diagnostic
-            source
-            (+ (elt range 0) 1)
-            (+ (elt range 1) 1)
-            (flymake-textlint--severity (gethash "severity" message))
-            (format "%s: %s"
-                    (gethash "ruleId" message)
-                    (gethash "message" message)))))
-       (gethash "messages" (elt json 0))))))
+              source
+              (+ (elt range 0) 1)
+              (+ (elt range 1) 1)
+              (flymake-textlint--severity (gethash "severity" message))
+              (format "%s: %s"
+                      (gethash "ruleId" message)
+                      (gethash "message" message)))))
+       (gethash "messages" (elt json 0)))))
+   ;; unexpected
+   (t
+    (flymake-log :error "No result found")
+    nil)))
 
 (defun flymake-textlint--severity (level)
   "Convert numerical severity LEVEL to Flymake severity type."
@@ -92,8 +100,8 @@ JSON output of \"textlint\" is processed and passed to REPORT-FN."
   ;; Not having textlint command is a serious problem which should cause
   ;; the backend to disable itself, so an error is signaled.
   ;;
-  (unless (executable-find "textlint")
-    (error "Cannot find a suitable textlint"))
+  (unless (executable-find flymake-textlint-program)
+    (error "Cannot find a suitable textlint program: %s" flymake-textlint-program))
   ;; If a live process launched in an earlier check was found, that
   ;; process is killed.  When that process's sentinel eventually runs,
   ;; it will notice its obsoletion, since it have since reset
