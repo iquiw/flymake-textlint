@@ -59,23 +59,31 @@
   "Parse \"textlint\" output buffer.
 SOURCE is used for `flymake-make-diagnostic', not a buffer to be parsed."
   (goto-char (point-min))
-  (if (re-search-forward "^== No rules found" 100 t)
-      (progn
-        (flymake-log :error "No textlint rule found")
-        nil)
+  (cond
+   ;; no rule found
+   ((re-search-forward "^== No rules found" 100 t)
+    (flymake-log :error "No textlint rule found")
+    nil)
+   ;; found JSON array
+   ((re-search-forward "^\\[" nil t)
+    (goto-char (match-beginning 0))
     (let ((json (json-parse-buffer)))
       (mapcar
        (lambda (message)
          (let ((range (gethash "range" message)))
            (flymake-make-diagnostic
-            source
-            (+ (elt range 0) 1)
-            (+ (elt range 1) 1)
-            (flymake-textlint--severity (gethash "severity" message))
-            (format "%s: %s"
-                    (gethash "ruleId" message)
-                    (gethash "message" message)))))
-       (gethash "messages" (elt json 0))))))
+              source
+              (+ (elt range 0) 1)
+              (+ (elt range 1) 1)
+              (flymake-textlint--severity (gethash "severity" message))
+              (format "%s: %s"
+                      (gethash "ruleId" message)
+                      (gethash "message" message)))))
+       (gethash "messages" (elt json 0)))))
+   ;; unexpected
+   (t
+    (flymake-log :error "No result found")
+    nil)))
 
 (defun flymake-textlint--severity (level)
   "Convert numerical severity LEVEL to Flymake severity type."
