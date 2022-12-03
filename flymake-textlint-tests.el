@@ -7,7 +7,8 @@
 
 (ert-deftest flymake-textlint--command-line-default ()
   "Test whether default command line is correct."
-  (let ((buffer-file-name nil))
+  (let ((flymake-textlint-args '())
+        (buffer-file-name nil))
     (should (equal (flymake-textlint--command-line)
                    '("textlint" "--format" "json" "--stdin")))))
 
@@ -20,7 +21,8 @@
 
 (ert-deftest flymake-textlint--command-line-with-name ()
   "Test whether default command line is correct."
-  (let ((buffer-file-name "test.md"))
+  (let ((flymake-textlint-args '())
+        (buffer-file-name "test.md"))
     (should (equal (flymake-textlint--command-line)
                    '("textlint" "--format" "json" "--stdin" "--stdin-filename" "test.md")))))
 
